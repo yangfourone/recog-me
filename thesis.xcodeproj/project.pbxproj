@@ -18,6 +18,7 @@
 		F8157A3723FBB1CD00FD864C /* Register.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8157A3623FBB1CD00FD864C /* Register.swift */; };
 		F8157A3923FBBD1200FD864C /* Recognize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8157A3823FBBD1200FD864C /* Recognize.swift */; };
 		F8157A3D23FBD6AE00FD864C /* DeviceInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8157A3C23FBD6AE00FD864C /* DeviceInput.swift */; };
+		F86F7F3223FFD2790031D7BC /* GetIp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F86F7F3123FFD2790031D7BC /* GetIp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		F8157A3623FBB1CD00FD864C /* Register.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Register.swift; sourceTree = "<group>"; };
 		F8157A3823FBBD1200FD864C /* Recognize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recognize.swift; sourceTree = "<group>"; };
 		F8157A3C23FBD6AE00FD864C /* DeviceInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInput.swift; sourceTree = "<group>"; };
+		F86F7F3123FFD2790031D7BC /* GetIp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetIp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,7 @@
 				F8157A3623FBB1CD00FD864C /* Register.swift */,
 				F8157A3823FBBD1200FD864C /* Recognize.swift */,
 				F8157A3C23FBD6AE00FD864C /* DeviceInput.swift */,
+				F86F7F3123FFD2790031D7BC /* GetIp.swift */,
 			);
 			path = thesis;
 			sourceTree = "<group>";
@@ -271,6 +274,7 @@
 				F8157A0523FBA94900FD864C /* AppDelegate.swift in Sources */,
 				F8157A0723FBA94900FD864C /* SceneDelegate.swift in Sources */,
 				F8157A3523FBAF4100FD864C /* Login.swift in Sources */,
+				F86F7F3223FFD2790031D7BC /* GetIp.swift in Sources */,
 				F8157A3723FBB1CD00FD864C /* Register.swift in Sources */,
 				F8157A3D23FBD6AE00FD864C /* DeviceInput.swift in Sources */,
 				F8157A3923FBBD1200FD864C /* Recognize.swift in Sources */,

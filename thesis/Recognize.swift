@@ -67,12 +67,38 @@ class Recognize: UIViewController {
             start.setTitle(" End", for: .normal)
             vision.isHidden = false
             session.startRunning()
+            Recognize()
         } else {
             /** shot down camera view **/
             start.setTitle(" Start", for: .normal)
             vision.isHidden = true
             session.stopRunning()
         }
+    }
+    
+    func Recognize() {
+        let imageBase64 = UIImage(named: "test.png")?.toBase64()
+        let ip = getIp(method: "upload-image")
+        let url = URL(string: ip)
+        var request = URLRequest(url: url!)
+        request.httpBody = ("data=" + imageBase64!).data(using: .utf8)
+        request.httpMethod = "POST"
+
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            guard error == nil && data != nil else {
+                print("error=\(String(describing: error))")
+                return
+            }
+
+            if let httpStatus = response as? HTTPURLResponse, httpStatus.statusCode != 200 {
+                print("statusCode should be 200, but is \(httpStatus.statusCode)")
+                print("response = \(String(describing: response))")
+            }
+
+            let responseString = String(data: data!, encoding: .utf8)
+            print("responseString = \(String(describing: responseString))")
+        }
+        task.resume()
     }
 }
 
@@ -91,5 +117,12 @@ extension UIInterfaceOrientation {
             default:
                 return AVCaptureVideoOrientation.portrait
         }
+    }
+}
+
+extension UIImage {
+    func toBase64() -> String? {
+        guard let imageData = self.pngData() else { return nil }
+        return imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
     }
 }
