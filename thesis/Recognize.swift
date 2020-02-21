@@ -11,31 +11,18 @@ import AVFoundation
 
 class Recognize: UIViewController {
     
-    @IBOutlet weak var vision: UIView!
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var left: UIView!
     @IBOutlet weak var right: UIView!
     @IBOutlet weak var information: UILabel!
     @IBOutlet weak var start: UIButton!
-    
-    let session = AVCaptureSession()
-    let deviceInput = DeviceInput()
-    let previewLayer = AVCaptureVideoPreviewLayer()
-    
-    func settingPreviewLayer() {
-        previewLayer.frame = vision.bounds
-        
-        previewLayer.session = session
-        previewLayer.videoGravity = .resizeAspectFill
-        
-        vision.layer.addSublayer(previewLayer)
-    }
+
+    var flag = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         /** view styling **/
-        vision.layer.borderColor = UIColor.black.cgColor
-        
         left.layer.cornerRadius = 8
         left.layer.borderColor = UIColor.white.cgColor
         left.layer.borderWidth = 3
@@ -45,16 +32,6 @@ class Recognize: UIViewController {
         right.layer.borderColor = UIColor.white.cgColor
         right.layer.borderWidth = 3
         right.backgroundColor = UIColor(white: 1, alpha: 0)
-        
-        settingPreviewLayer()
-        session.addInput(deviceInput.backWildAngleCamera!)
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let previewLayerConnection =  self.previewLayer.connection, previewLayerConnection.isVideoOrientationSupported {
-            previewLayerConnection.videoOrientation = UIApplication.shared.statusBarOrientation.videoOrientation
-        }
     }
     
     @IBAction func logOut(_ sender: Any) {
@@ -63,21 +40,32 @@ class Recognize: UIViewController {
     
     @IBAction func Start(_ sender: Any) {
         if start.currentTitle! == " Start" {
+            flag = true
             /** loading camera view **/
             start.setTitle(" End", for: .normal)
-            vision.isHidden = false
-            session.startRunning()
-            Recognize()
+            imageView.isHidden = false
+
+            CaptureManager.shared.statSession()
+            CaptureManager.shared.delegate = self
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
+                self.Recognize()
+            })
         } else {
+            flag = false
             /** shot down camera view **/
             start.setTitle(" Start", for: .normal)
-            vision.isHidden = true
-            session.stopRunning()
+            imageView.isHidden = true
+            
+            CaptureManager.shared.stopSession()
         }
     }
     
     func Recognize() {
-        let imageBase64 = UIImage(named: "test.png")?.toBase64()
+        let inputImage = imageView.image
+        print(inputImage!.size)
+        saveImage(image: inputImage!)
+        let imageBase64 = inputImage!.toBase64()
         let ip = getIp(method: "upload-image")
         let url = URL(string: ip)
         var request = URLRequest(url: url!)
@@ -99,6 +87,11 @@ class Recognize: UIViewController {
             print("responseString = \(String(describing: responseString))")
         }
         task.resume()
+    }
+    
+    
+    func saveImage(image: UIImage) {
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
     }
 }
 
@@ -124,5 +117,11 @@ extension UIImage {
     func toBase64() -> String? {
         guard let imageData = self.pngData() else { return nil }
         return imageData.base64EncodedString(options: Data.Base64EncodingOptions.lineLength64Characters)
+    }
+}
+
+extension Recognize: CaptureManagerDelegate {
+    func processCapturedImage(image: UIImage) {
+        self.imageView.image = image
     }
 }
