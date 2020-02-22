@@ -45,7 +45,7 @@ class Recognize: UIViewController {
             start.setTitle(" End", for: .normal)
             imageView.isHidden = false
 
-            CaptureManager.shared.statSession()
+            CaptureManager.shared.startSession()
             CaptureManager.shared.delegate = self
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
@@ -62,9 +62,8 @@ class Recognize: UIViewController {
     }
     
     func Recognize() {
-        let inputImage = imageView.image
-        print(inputImage!.size)
-        saveImage(image: inputImage!)
+        var inputImage = imageView.image
+        inputImage = resizeImage(image: inputImage!, width: 400)
         let imageBase64 = inputImage!.toBase64()
         let ip = getIp(method: "upload-image")
         let url = URL(string: ip)
@@ -89,9 +88,20 @@ class Recognize: UIViewController {
         task.resume()
     }
     
-    
+    // save image to album
     func saveImage(image: UIImage) {
         UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+    }
+    
+    // resize image
+    func resizeImage(image: UIImage, width: CGFloat) -> UIImage {
+            let size = CGSize(width: width, height:
+                image.size.height * width / image.size.width)
+            let renderer = UIGraphicsImageRenderer(size: size)
+            let newImage = renderer.image { (context) in
+                image.draw(in: renderer.format.bounds)
+            }
+            return newImage
     }
 }
 
