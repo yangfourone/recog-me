@@ -16,8 +16,10 @@ class Recognize: UIViewController {
     @IBOutlet weak var right: UIView!
     @IBOutlet weak var information: UILabel!
     @IBOutlet weak var start: UIButton!
-
-    var flag = false
+    @IBOutlet weak var activity: UIActivityIndicatorView!
+    
+    var predict = ""
+    var timerTask:Timer?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +34,8 @@ class Recognize: UIViewController {
         right.layer.borderColor = UIColor.white.cgColor
         right.layer.borderWidth = 3
         right.backgroundColor = UIColor(white: 1, alpha: 0)
+        
+        activity.stopAnimating()
     }
     
     @IBAction func logOut(_ sender: Any) {
@@ -40,7 +44,7 @@ class Recognize: UIViewController {
     
     @IBAction func Start(_ sender: Any) {
         if start.currentTitle! == " Start" {
-            flag = true
+            information.text = "Setting up..."
             /** loading camera view **/
             start.setTitle(" End", for: .normal)
             imageView.isHidden = false
@@ -48,30 +52,54 @@ class Recognize: UIViewController {
             CaptureManager.shared.startSession()
             CaptureManager.shared.delegate = self
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: {
-                self.Recognize()
-            })
+            timerTask = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: Selector(("Recognize")), userInfo: nil, repeats: true)
+            
         } else {
-            flag = false
             /** shot down camera view **/
             start.setTitle(" Start", for: .normal)
             imageView.isHidden = true
             
             CaptureManager.shared.stopSession()
+
+            timerTask?.invalidate()
+            timerTask = nil
         }
     }
     
-    func Recognize() {
-        var inputImage = imageView.image
-        inputImage = resizeImage(image: inputImage!, width: 400)
-        let imageBase64 = inputImage!.toBase64()
-        let ip = getIp(method: "upload-image")
+    @objc func Recognize() {
+        uploadImage { results in
+            switch results {
+            case .success(let res):
+                // decode
+                let datadec  = res.data(using: String.Encoding.utf8)
+                let decodevalue = String(data: datadec!, encoding: String.Encoding.nonLossyASCII)
+                // UI
+                self.information.text = decodevalue ?? "something error"
+                self.activity.stopAnimating()
+                break
+            case .failure(let error):
+                print(error.localizedDescription)
+                break
+            }
+        }
+    }
+    
+    func uploadImage(completion: @escaping (Result<String, Error>) -> Void) {
+        // UI
+        activity.startAnimating()
+        
+        // recognize
+        let inputImage = imageView.image
+        let resizedImage = resizeImage(image: inputImage!, width: 133)
+        let imageBase64 = resizedImage.toBase64()
+        
+        let ip = getIp(method: "recognize")
         let url = URL(string: ip)
         var request = URLRequest(url: url!)
         request.httpBody = ("data=" + imageBase64!).data(using: .utf8)
         request.httpMethod = "POST"
 
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        URLSession.shared.dataTask(with: request) { (data, response, error) in
             guard error == nil && data != nil else {
                 print("error=\(String(describing: error))")
                 return
@@ -83,9 +111,11 @@ class Recognize: UIViewController {
             }
 
             let responseString = String(data: data!, encoding: .utf8)
-            print("responseString = \(String(describing: responseString))")
-        }
-        task.resume()
+            
+            DispatchQueue.main.async {
+                completion(.success(responseString!))
+            }
+        }.resume()
     }
     
     // save image to album
