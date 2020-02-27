@@ -12,10 +12,14 @@ class Login: UIViewController {
     
     @IBOutlet weak var account: UITextField!
     @IBOutlet weak var password: UITextField!
+    @IBOutlet weak var logIn: UIButton!
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        /** button styling **/
+        logIn.layer.cornerRadius = 8
         
         /** close keyboard when click anywhere **/
         self.hideKeyboardWhenTappedAround()

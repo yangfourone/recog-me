@@ -18,6 +18,9 @@ class Register: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        /** button styling **/
+        confirm.layer.cornerRadius = 8
+        
         /** close keyboard when click anywhere **/
         self.hideKeyboardWhenTappedAround()
     }

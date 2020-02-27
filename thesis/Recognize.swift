@@ -11,9 +11,10 @@ import AVFoundation
 
 class Recognize: UIViewController {
     
-    @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet weak var left: UIView!
-    @IBOutlet weak var right: UIView!
+    @IBOutlet weak var cameraView: UIImageView!
+    @IBOutlet weak var indoorMap: UIImageView!
+    @IBOutlet weak var cameraViewMask: UIView!
+    @IBOutlet weak var indoorMapMask: UIView!
     @IBOutlet weak var information: UILabel!
     @IBOutlet weak var start: UIButton!
     @IBOutlet weak var activity: UIActivityIndicatorView!
@@ -25,15 +26,15 @@ class Recognize: UIViewController {
         super.viewDidLoad()
         
         /** view styling **/
-        left.layer.cornerRadius = 8
-        left.layer.borderColor = UIColor.white.cgColor
-        left.layer.borderWidth = 3
-        left.backgroundColor = UIColor(white: 1, alpha: 0)
+        cameraViewMask.layer.cornerRadius = 8
+        cameraViewMask.layer.borderColor = UIColor.white.cgColor
+        cameraViewMask.layer.borderWidth = 3
+        cameraViewMask.backgroundColor = UIColor(white: 1, alpha: 0)
         
-        right.layer.cornerRadius = 8
-        right.layer.borderColor = UIColor.white.cgColor
-        right.layer.borderWidth = 3
-        right.backgroundColor = UIColor(white: 1, alpha: 0)
+        indoorMapMask.layer.cornerRadius = 8
+        indoorMapMask.layer.borderColor = UIColor.white.cgColor
+        indoorMapMask.layer.borderWidth = 3
+        indoorMapMask.backgroundColor = UIColor(white: 1, alpha: 0)
         
         activity.stopAnimating()
     }
@@ -47,7 +48,8 @@ class Recognize: UIViewController {
             information.text = "Setting up..."
             /** loading camera view **/
             start.setTitle(" End", for: .normal)
-            imageView.isHidden = false
+            cameraView.isHidden = false
+            indoorMap.isHidden = false
 
             CaptureManager.shared.startSession()
             CaptureManager.shared.delegate = self
@@ -57,7 +59,8 @@ class Recognize: UIViewController {
         } else {
             /** shot down camera view **/
             start.setTitle(" Start", for: .normal)
-            imageView.isHidden = true
+            cameraView.isHidden = true
+            indoorMap.isHidden = true
             
             CaptureManager.shared.stopSession()
 
@@ -89,7 +92,7 @@ class Recognize: UIViewController {
         activity.startAnimating()
         
         // recognize
-        let inputImage = imageView.image
+        let inputImage = cameraView.image
         let resizedImage = resizeImage(image: inputImage!, width: 133)
         let imageBase64 = resizedImage.toBase64()
         
@@ -162,6 +165,6 @@ extension UIImage {
 
 extension Recognize: CaptureManagerDelegate {
     func processCapturedImage(image: UIImage) {
-        self.imageView.image = image
+        self.cameraView.image = image
     }
 }
