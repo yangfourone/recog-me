@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import CoreMotion
 
 class Recognize: UIViewController {
     
@@ -17,15 +18,19 @@ class Recognize: UIViewController {
     @IBOutlet weak var indoorMapMask: UIView!
     @IBOutlet weak var information: UILabel!
     @IBOutlet weak var start: UIButton!
+    @IBOutlet weak var end: UIButton!
     @IBOutlet weak var activity: UIActivityIndicatorView!
     
     var predict = ""
     var timerTask:Timer?
+    let altimeter = CMAltimeter()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         /** view styling **/
+        end.isHidden = true
+        
         cameraViewMask.layer.cornerRadius = 8
         cameraViewMask.layer.borderColor = UIColor.white.cgColor
         cameraViewMask.layer.borderWidth = 3
@@ -36,6 +41,7 @@ class Recognize: UIViewController {
         indoorMapMask.layer.borderWidth = 3
         indoorMapMask.backgroundColor = UIColor(white: 1, alpha: 0)
         
+//        startRelativeAltitudeUpdates()
         activity.stopAnimating()
     }
     
@@ -44,29 +50,33 @@ class Recognize: UIViewController {
     }
     
     @IBAction func Start(_ sender: Any) {
-        if start.currentTitle! == " Start" {
-            information.text = "Setting up..."
-            /** loading camera view **/
-            start.setTitle(" End", for: .normal)
-            cameraView.isHidden = false
-            indoorMap.isHidden = false
+        /** UI update **/
+        end.isHidden = false
+        start.isHidden = true
+        information.text = NSLocalizedString("Recognize_Information_Setting", comment: "")
+        /** loading camera view **/
+        cameraView.isHidden = false
+        indoorMap.isHidden = false
 
-            CaptureManager.shared.startSession()
-            CaptureManager.shared.delegate = self
-            
-            timerTask = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: Selector(("Recognize")), userInfo: nil, repeats: true)
-            
-        } else {
-            /** shot down camera view **/
-            start.setTitle(" Start", for: .normal)
-            cameraView.isHidden = true
-            indoorMap.isHidden = true
-            
-            CaptureManager.shared.stopSession()
+        CaptureManager.shared.startSession()
+        CaptureManager.shared.delegate = self
+        
+        timerTask = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: Selector(("Recognize")), userInfo: nil, repeats: true)
+    }
+    
+    @IBAction func End(_ sender: Any) {
+        /** UI update **/
+        end.isHidden = true
+        start.isHidden = false
+        information.text = ""
+        /** shot down camera view **/
+        cameraView.isHidden = true
+        indoorMap.isHidden = true
+        
+        CaptureManager.shared.stopSession()
 
-            timerTask?.invalidate()
-            timerTask = nil
-        }
+        timerTask?.invalidate()
+        timerTask = nil
     }
     
     @objc func Recognize() {
@@ -85,6 +95,25 @@ class Recognize: UIViewController {
                 break
             }
         }
+    }
+    
+    func startRelativeAltitudeUpdates() {
+        guard CMAltimeter.isRelativeAltitudeAvailable() else {
+            print("\n當前設備不支援獲取高度\n")
+            return
+        }
+
+        let queue = OperationQueue.current
+        self.altimeter.startRelativeAltitudeUpdates(to: queue!, withHandler: {
+            (altitudeData, error) in
+            guard error == nil else {
+                print(error!)
+                return
+            }
+            print("\n\(altitudeData!.pressure) kPa")
+            self.information.text = String(Float(truncating: altitudeData!.pressure)*10.0)
+            print("\(Float(truncating: altitudeData!.pressure)*10.0) hPa")
+        })
     }
     
     func uploadImage(completion: @escaping (Result<String, Error>) -> Void) {

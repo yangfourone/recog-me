@@ -33,6 +33,9 @@
                                 </constraints>
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" keyboardType="alphabet"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="Login_Account"/>
+                                </userDefinedRuntimeAttributes>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="jNw-Lf-Bh2">
                                 <rect key="frame" x="426" y="400" width="260" height="34"/>
@@ -42,6 +45,9 @@
                                 </constraints>
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" keyboardType="alphabet" secureTextEntry="YES"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="Login_Password"/>
+                                </userDefinedRuntimeAttributes>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x2k-fK-PQf">
                                 <rect key="frame" x="426" y="684" width="260" height="30"/>
@@ -53,8 +59,11 @@
                                 <state key="normal" title="Sign up for RecogMe">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="Login_SignUp"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="7fm-vw-uSL" kind="show" id="HML-6B-xfe"/>
+                                    <action selector="register:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DoE-53-Zjr"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AA7-jz-54Y">
@@ -68,9 +77,11 @@
                                 <state key="normal" title="Log In">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="Login_Login"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="logIn:" destination="BYZ-38-t0r" eventType="touchUpInside" id="80V-66-Nkg"/>
-                                    <segue destination="SGG-1z-mBT" kind="show" id="hN8-ih-iOU"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -104,11 +115,11 @@
             <objects>
                 <viewController storyboardIdentifier="Register" useStoryboardIdentifierAsRestorationIdentifier="YES" id="7fm-vw-uSL" customClass="Register" customModule="Recog_Me" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="2nD-mf-2Fd">
-                        <rect key="frame" x="0.0" y="0.0" width="712" height="794"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1112" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Sign up" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J0q-aV-iJD">
-                                <rect key="frame" x="206" y="98" width="300" height="70"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sign up" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J0q-aV-iJD">
+                                <rect key="frame" x="406" y="100" width="300" height="70"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="300" id="nuZ-Q0-bhN"/>
                                     <constraint firstAttribute="height" constant="70" id="ocM-mV-qa2"/>
@@ -118,31 +129,40 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="register ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="p8h-kk-KWS">
-                                <rect key="frame" x="226" y="310" width="260" height="34"/>
+                                <rect key="frame" x="426" y="330" width="260" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="260" id="i60-bx-uKy"/>
                                     <constraint firstAttribute="height" constant="34" id="uUf-KD-0uH"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" keyboardType="alphabet"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="SignUp_Account"/>
+                                </userDefinedRuntimeAttributes>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xUF-B0-lNI">
-                                <rect key="frame" x="226" y="380" width="260" height="34"/>
+                                <rect key="frame" x="426" y="400" width="260" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="260" id="1QG-ky-k2X"/>
                                     <constraint firstAttribute="height" constant="34" id="aiP-S0-cjc"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" keyboardType="alphabet" secureTextEntry="YES"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="SignUp_Password"/>
+                                </userDefinedRuntimeAttributes>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="confirm password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sy9-c6-MAa">
-                                <rect key="frame" x="226" y="450" width="260" height="34"/>
+                                <rect key="frame" x="426" y="470" width="260" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="260" id="nJq-N4-k7v"/>
                                     <constraint firstAttribute="height" constant="34" id="zx1-Y7-k8F"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="16"/>
                                 <textInputTraits key="textInputTraits" keyboardType="alphabet" secureTextEntry="YES"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="SignUp_Confirm"/>
+                                </userDefinedRuntimeAttributes>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lzp-Rd-YlW">
                                 <rect key="frame" x="40" y="40" width="100" height="50"/>
@@ -153,12 +173,15 @@
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Light" family="Chalkboard SE" pointSize="20"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title=" Back" image="arrow.left.square" catalog="system"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="SignUp_Back"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="back:" destination="7fm-vw-uSL" eventType="touchUpInside" id="Uhh-gz-uiA"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9h-Dd-ESm">
-                                <rect key="frame" x="226" y="581" width="260" height="38"/>
+                                <rect key="frame" x="426" y="621" width="260" height="38"/>
                                 <color key="backgroundColor" systemColor="separatorColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="260" id="kf9-Tc-8lj"/>
@@ -168,6 +191,9 @@
                                 <state key="normal" title="Sign Up">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="SignUp_SignUp"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="signUp:" destination="7fm-vw-uSL" eventType="touchUpInside" id="9LI-e6-Tob"/>
                                 </connections>
@@ -180,6 +206,7 @@
                             <constraint firstItem="lzp-Rd-YlW" firstAttribute="top" secondItem="uYk-Xe-PX1" secondAttribute="top" constant="40" id="Mh4-OS-a9S"/>
                             <constraint firstItem="sy9-c6-MAa" firstAttribute="centerY" secondItem="2nD-mf-2Fd" secondAttribute="centerY" constant="70" id="NDR-be-srM"/>
                             <constraint firstItem="p8h-kk-KWS" firstAttribute="centerX" secondItem="2nD-mf-2Fd" secondAttribute="centerX" id="NoA-MY-vuY"/>
+                            <constraint firstItem="J0q-aV-iJD" firstAttribute="top" secondItem="uYk-Xe-PX1" secondAttribute="top" constant="100" id="Rwz-7q-9Z4"/>
                             <constraint firstItem="xUF-B0-lNI" firstAttribute="centerX" secondItem="2nD-mf-2Fd" secondAttribute="centerX" id="S1Y-pA-1Lk"/>
                             <constraint firstItem="xUF-B0-lNI" firstAttribute="centerX" secondItem="2nD-mf-2Fd" secondAttribute="centerX" id="Uv6-iw-taW"/>
                             <constraint firstItem="J0q-aV-iJD" firstAttribute="centerX" secondItem="2nD-mf-2Fd" secondAttribute="centerX" id="bqX-mW-Ed6"/>
@@ -190,49 +217,41 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="uYk-Xe-PX1"/>
                     </view>
-                    <navigationItem key="navigationItem" id="BJh-o2-x0F"/>
                     <connections>
                         <outlet property="account" destination="p8h-kk-KWS" id="0EF-Go-9xo"/>
                         <outlet property="back" destination="lzp-Rd-YlW" id="xOF-X0-4C9"/>
                         <outlet property="confirm" destination="sy9-c6-MAa" id="89O-JZ-ZIf"/>
                         <outlet property="password" destination="xUF-B0-lNI" id="V3Z-Ig-FA3"/>
+                        <outlet property="signUp" destination="O9h-Dd-ESm" id="4kY-os-Qla"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yhk-lo-TCM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="894" y="138"/>
+            <point key="canvasLocation" x="-193" y="827"/>
         </scene>
         <!--Recognize-->
         <scene sceneID="5YS-Ax-T4W">
             <objects>
                 <viewController storyboardIdentifier="Recognize" useStoryboardIdentifierAsRestorationIdentifier="YES" id="SGG-1z-mBT" customClass="Recognize" customModule="Recog_Me" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="G0R-tO-h7S">
-                        <rect key="frame" x="0.0" y="0.0" width="712" height="794"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1112" height="834"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="i05-So-DAy">
-                                <rect key="frame" x="25" y="157" width="662" height="372"/>
+                                <rect key="frame" x="225" y="197" width="662" height="372"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="372" id="6gC-ZY-l5h"/>
                                     <constraint firstAttribute="width" constant="662" id="AyC-GW-gZY"/>
                                 </constraints>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="gee-ku-1hi">
-                                <rect key="frame" x="25" y="559" width="662" height="210"/>
+                                <rect key="frame" x="225" y="599" width="662" height="210"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="662" id="Etq-Qh-8mI"/>
                                     <constraint firstAttribute="height" constant="210" id="zEU-WZ-sIN"/>
                                 </constraints>
                             </imageView>
-                            <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7Eg-zg-aG2">
-                                <rect key="frame" x="6" y="0.0" width="700" height="109"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="700" id="4nz-R8-dWq"/>
-                                    <constraint firstAttribute="height" constant="109" id="Csb-HI-X2O"/>
-                                </constraints>
-                            </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="238-Kp-Vzg">
                                 <rect key="frame" x="25" y="40" width="120" height="50"/>
                                 <constraints>
@@ -242,12 +261,15 @@
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Light" family="Chalkboard SE" pointSize="20"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title=" Log Out" image="delete.left" catalog="system"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="Recognize_LogOut"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="logOut:" destination="SGG-1z-mBT" eventType="touchUpInside" id="ISV-x3-SV0"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vEX-Zx-dNQ">
-                                <rect key="frame" x="567" y="40" width="120" height="50"/>
+                                <rect key="frame" x="967" y="40" width="120" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="120" id="I6D-zW-Vho"/>
                                     <constraint firstAttribute="height" constant="50" id="d8w-co-joc"/>
@@ -255,12 +277,31 @@
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Light" family="Chalkboard SE" pointSize="20"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title=" Start" image="paperplane" catalog="system"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="Recognize_Start"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="Start:" destination="SGG-1z-mBT" eventType="touchUpInside" id="n1e-Et-Yfd"/>
                                 </connections>
                             </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wLB-u3-Hiq">
+                                <rect key="frame" x="967" y="40" width="120" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="120" id="ToU-pa-j4t"/>
+                                    <constraint firstAttribute="height" constant="50" id="kcu-nD-g83"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="ChalkboardSE-Light" family="Chalkboard SE" pointSize="20"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title=" End" image="paperplane" catalog="system"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="Recognize_End"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="End:" destination="SGG-1z-mBT" eventType="touchUpInside" id="PKc-eA-2g0"/>
+                                </connections>
+                            </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NzH-hu-bV6">
-                                <rect key="frame" x="25" y="157" width="662" height="372"/>
+                                <rect key="frame" x="225" y="197" width="662" height="372"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="662" id="5pD-ZS-w5q"/>
@@ -268,7 +309,7 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Information..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iA5-Y8-4ZO">
-                                <rect key="frame" x="147" y="40" width="418" height="40"/>
+                                <rect key="frame" x="347" y="40" width="418" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="89D-CB-lPr"/>
                                     <constraint firstAttribute="width" constant="418" id="wL3-MJ-Sid"/>
@@ -276,9 +317,12 @@
                                 <fontDescription key="fontDescription" name="ChalkboardSE-Regular" family="Chalkboard SE" pointSize="18"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="localizedKey" value="Recognize_Information"/>
+                                </userDefinedRuntimeAttributes>
                             </label>
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="EyX-Uk-NKk">
-                                <rect key="frame" x="343.5" y="85" width="25" height="25"/>
+                                <rect key="frame" x="543.5" y="85" width="25" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="25" id="Ihs-Dz-Tit"/>
                                     <constraint firstAttribute="width" constant="25" id="p0U-CE-eTH"/>
@@ -286,7 +330,7 @@
                                 <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </activityIndicatorView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x6C-oO-BDq">
-                                <rect key="frame" x="25" y="559" width="662" height="210"/>
+                                <rect key="frame" x="225" y="599" width="662" height="210"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="662" id="hfD-W0-Y4D"/>
@@ -297,29 +341,31 @@
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="vEX-Zx-dNQ" firstAttribute="top" secondItem="UEG-E1-2oe" secondAttribute="top" constant="40" id="25K-tj-yHo"/>
+                            <constraint firstItem="238-Kp-Vzg" firstAttribute="leading" secondItem="UEG-E1-2oe" secondAttribute="leading" constant="25" id="2ES-v7-kbx"/>
                             <constraint firstItem="i05-So-DAy" firstAttribute="centerX" secondItem="G0R-tO-h7S" secondAttribute="centerX" id="2WR-8Z-5oM"/>
-                            <constraint firstItem="238-Kp-Vzg" firstAttribute="leading" secondItem="UEG-E1-2oe" secondAttribute="leading" constant="25" id="2Z5-7T-O6a"/>
                             <constraint firstItem="iA5-Y8-4ZO" firstAttribute="centerX" secondItem="G0R-tO-h7S" secondAttribute="centerX" id="55x-3k-VYn"/>
                             <constraint firstItem="iA5-Y8-4ZO" firstAttribute="top" secondItem="UEG-E1-2oe" secondAttribute="top" constant="40" id="BME-OZ-ElV"/>
+                            <constraint firstItem="wLB-u3-Hiq" firstAttribute="top" secondItem="UEG-E1-2oe" secondAttribute="top" constant="40" id="DOY-IB-esW"/>
                             <constraint firstItem="gee-ku-1hi" firstAttribute="top" secondItem="i05-So-DAy" secondAttribute="bottom" constant="30" id="G2A-as-LRU"/>
                             <constraint firstItem="UEG-E1-2oe" firstAttribute="trailing" secondItem="vEX-Zx-dNQ" secondAttribute="trailing" constant="25" id="KRF-5s-36p"/>
                             <constraint firstItem="gee-ku-1hi" firstAttribute="centerX" secondItem="G0R-tO-h7S" secondAttribute="centerX" id="Ksj-LD-5a6"/>
                             <constraint firstItem="EyX-Uk-NKk" firstAttribute="centerX" secondItem="G0R-tO-h7S" secondAttribute="centerX" id="OYl-rU-hOv"/>
                             <constraint firstItem="NzH-hu-bV6" firstAttribute="centerX" secondItem="G0R-tO-h7S" secondAttribute="centerX" id="Sro-CS-MHT"/>
                             <constraint firstItem="gee-ku-1hi" firstAttribute="top" secondItem="NzH-hu-bV6" secondAttribute="bottom" constant="30" id="dxi-8s-pPy"/>
+                            <constraint firstItem="238-Kp-Vzg" firstAttribute="top" secondItem="UEG-E1-2oe" secondAttribute="top" constant="40" id="eqH-Xw-3u3"/>
                             <constraint firstItem="x6C-oO-BDq" firstAttribute="centerX" secondItem="G0R-tO-h7S" secondAttribute="centerX" id="hbn-EA-xEF"/>
-                            <constraint firstItem="238-Kp-Vzg" firstAttribute="top" secondItem="UEG-E1-2oe" secondAttribute="top" constant="40" id="tz7-AL-Hb0"/>
+                            <constraint firstItem="UEG-E1-2oe" firstAttribute="trailing" secondItem="wLB-u3-Hiq" secondAttribute="trailing" constant="25" id="mDW-xK-yqo"/>
                             <constraint firstItem="UEG-E1-2oe" firstAttribute="bottom" secondItem="gee-ku-1hi" secondAttribute="bottom" constant="25" id="wz9-Ku-mdr"/>
                             <constraint firstItem="EyX-Uk-NKk" firstAttribute="top" secondItem="iA5-Y8-4ZO" secondAttribute="bottom" constant="5" id="xYh-L9-igA"/>
                             <constraint firstItem="UEG-E1-2oe" firstAttribute="bottom" secondItem="x6C-oO-BDq" secondAttribute="bottom" constant="25" id="zOf-p0-JBd"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="UEG-E1-2oe"/>
                     </view>
-                    <navigationItem key="navigationItem" id="NMi-Rk-22t"/>
                     <connections>
                         <outlet property="activity" destination="EyX-Uk-NKk" id="PSL-2E-iTX"/>
                         <outlet property="cameraView" destination="i05-So-DAy" id="wBL-cz-CS7"/>
                         <outlet property="cameraViewMask" destination="NzH-hu-bV6" id="WvL-m4-OA8"/>
+                        <outlet property="end" destination="wLB-u3-Hiq" id="2wG-vT-9fA"/>
                         <outlet property="indoorMap" destination="gee-ku-1hi" id="YcR-ob-vBf"/>
                         <outlet property="indoorMapMask" destination="x6C-oO-BDq" id="bZI-uM-Tyo"/>
                         <outlet property="information" destination="iA5-Y8-4ZO" id="Va8-ng-IPi"/>
@@ -328,7 +374,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DNA-f4-qPh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="131.11510791366908" y="1040.2877697841727"/>
+            <point key="canvasLocation" x="456" y="827"/>
         </scene>
     </scenes>
     <resources>

@@ -1,0 +1,24 @@
+/* 
+  Localizable.strings
+  thesis
+
+  Created by yangfourone on 2020/3/10.
+  Copyright © 2020 41. All rights reserved.
+*/
+
+"Login_Account" = "register ID";
+"Login_Password" = "password";
+"Login_Login" = "Log In";
+"Login_SignUp" = "Sign up for RecogMe";
+
+"SignUp_Account" = "register ID";
+"SignUp_Password" = "password";
+"SignUp_Confirm" = "confirm password";
+"SignUp_SignUp" = "Sign Up";
+"SignUp_Back" = " Back";
+
+"Recognize_LogOut" = " Log Out";
+"Recognize_Information" = "";
+"Recognize_Information_Setting" = "Setting Up...";
+"Recognize_Start" = " Start";
+"Recognize_End" = " End";

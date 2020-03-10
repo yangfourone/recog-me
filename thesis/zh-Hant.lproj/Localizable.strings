@@ -1,0 +1,24 @@
+/* 
+  Localizable.strings
+  thesis
+
+  Created by yangfourone on 2020/3/10.
+  Copyright © 2020 41. All rights reserved.
+*/
+
+"Login_Account" = "帳號";
+"Login_Password" = "密碼";
+"Login_Login" = "登入";
+"Login_SignUp" = "點我註冊 RecogMe";
+
+"SignUp_Account" = "帳號";
+"SignUp_Password" = "密碼";
+"SignUp_Confirm" = "確認密碼";
+"SignUp_SignUp" = "確定註冊";
+"SignUp_Back" = " 上一頁";
+
+"Recognize_LogOut" = " 登出";
+"Recognize_Information" = "";
+"Recognize_Information_Setting" = "設定中...";
+"Recognize_Start" = " 開始";
+"Recognize_End" = " 停止";

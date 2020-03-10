@@ -25,9 +25,13 @@ class Login: UIViewController {
         self.hideKeyboardWhenTappedAround()
     }
 
+    @IBAction func register(_ sender: Any) {
+        let RegisterViewController = self.storyboard?.instantiateViewController(withIdentifier: "Register") as! Register
+        present(RegisterViewController, animated: true, completion: nil)
+    }
     @IBAction func logIn(_ sender: Any) {
         let RecognizeViewController = self.storyboard?.instantiateViewController(withIdentifier: "Recognize") as! Recognize
-        self.navigationController?.pushViewController(RecognizeViewController, animated: true)
+        present(RecognizeViewController, animated: true, completion: nil)
     }
 }
 

@@ -14,12 +14,13 @@ class Register: UIViewController {
     @IBOutlet weak var account: UITextField!
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var confirm: UITextField!
+    @IBOutlet weak var signUp: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         /** button styling **/
-        confirm.layer.cornerRadius = 8
+        signUp.layer.cornerRadius = 8
         
         /** close keyboard when click anywhere **/
         self.hideKeyboardWhenTappedAround()
