@@ -21,7 +21,6 @@ class Recognize: UIViewController {
     @IBOutlet weak var end: UIButton!
     @IBOutlet weak var activity: UIActivityIndicatorView!
     
-    var predict = ""
     var timerTask:Timer?
     let altimeter = CMAltimeter()
     
@@ -34,12 +33,12 @@ class Recognize: UIViewController {
         cameraViewMask.layer.cornerRadius = 8
         cameraViewMask.layer.borderColor = UIColor.white.cgColor
         cameraViewMask.layer.borderWidth = 3
-        cameraViewMask.backgroundColor = UIColor(white: 1, alpha: 0)
+        cameraViewMask.backgroundColor = UIColor(white: 0, alpha: 1)
         
         indoorMapMask.layer.cornerRadius = 8
         indoorMapMask.layer.borderColor = UIColor.white.cgColor
         indoorMapMask.layer.borderWidth = 3
-        indoorMapMask.backgroundColor = UIColor(white: 1, alpha: 0)
+        indoorMapMask.backgroundColor = UIColor(white: 0, alpha: 1)
         
 //        startRelativeAltitudeUpdates()
         activity.stopAnimating()
@@ -51,6 +50,8 @@ class Recognize: UIViewController {
     
     @IBAction func Start(_ sender: Any) {
         /** UI update **/
+        cameraViewMask.backgroundColor = UIColor(white: 0, alpha: 0)
+        indoorMapMask.backgroundColor = UIColor(white: 0, alpha: 0)
         end.isHidden = false
         start.isHidden = true
         information.text = NSLocalizedString("Recognize_Information_Setting", comment: "")
@@ -61,11 +62,15 @@ class Recognize: UIViewController {
         CaptureManager.shared.startSession()
         CaptureManager.shared.delegate = self
         
-        timerTask = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: Selector(("Recognize")), userInfo: nil, repeats: true)
+        timerTask = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: Selector(("Recognize")), userInfo: nil, repeats: true)
     }
     
     @IBAction func End(_ sender: Any) {
         /** UI update **/
+        cameraViewMask.backgroundColor = UIColor(white: 0, alpha: 1)
+        indoorMapMask.backgroundColor = UIColor(white: 0, alpha: 1)
+        cameraViewMask.isHidden = false
+        indoorMapMask.isHidden = false
         end.isHidden = true
         start.isHidden = false
         information.text = ""
@@ -83,11 +88,22 @@ class Recognize: UIViewController {
         uploadImage { results in
             switch results {
             case .success(let res):
-                // decode
-                let datadec  = res.data(using: String.Encoding.utf8)
+                /**  decode **/
+                let datadec = res.data(using: String.Encoding.utf8)
                 let decodevalue = String(data: datadec!, encoding: String.Encoding.nonLossyASCII)
-                // UI
-                self.information.text = decodevalue ?? "something error"
+                let data = decodevalue!.data(using: .utf8)!
+                do {
+                    if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [Dictionary<String,Any>]
+                    {
+                        self.floorRecognize(jsonArray: jsonArray)
+                    } else {
+                        print("bad json")
+                    }
+                } catch let error as NSError {
+                    print(error)
+                }
+                
+                /** UI **/
                 self.activity.stopAnimating()
                 break
             case .failure(let error):
@@ -110,17 +126,20 @@ class Recognize: UIViewController {
                 print(error!)
                 return
             }
+            // 千帕
             print("\n\(altitudeData!.pressure) kPa")
-            self.information.text = String(Float(truncating: altitudeData!.pressure)*10.0)
+            // 百帕
             print("\(Float(truncating: altitudeData!.pressure)*10.0) hPa")
+            // 相對高度
+            print("\(altitudeData!.relativeAltitude) m")
         })
     }
     
     func uploadImage(completion: @escaping (Result<String, Error>) -> Void) {
-        // UI
+        /** UI **/
         activity.startAnimating()
         
-        // recognize
+        /** recognize **/
         let inputImage = cameraView.image
         let resizedImage = resizeImage(image: inputImage!, width: 133)
         let imageBase64 = resizedImage.toBase64()
@@ -150,12 +169,7 @@ class Recognize: UIViewController {
         }.resume()
     }
     
-    // save image to album
-    func saveImage(image: UIImage) {
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-    }
-    
-    // resize image
+    /** resize image **/
     func resizeImage(image: UIImage, width: CGFloat) -> UIImage {
             let size = CGSize(width: width, height:
                 image.size.height * width / image.size.width)
@@ -164,6 +178,21 @@ class Recognize: UIViewController {
                 image.draw(in: renderer.format.bounds)
             }
             return newImage
+    }
+    
+    /** floor recognize **/
+    func floorRecognize(jsonArray: [Dictionary<String,Any>]) {
+        setResponseParameter(building: jsonArray[0]["building"]! as! String, floor: jsonArray[0]["floor"]! as! String, position: jsonArray[0]["position"]! as! String, degree: jsonArray[0]["degree"]! as! String, chineseLabel: jsonArray[0]["chinese"]! as! String)
+    }
+    
+    /** parameters **/
+    func setResponseParameter(building: String, floor: String, position: String, degree: String, chineseLabel: String) {
+        information.text = "\(building) \(floor) \(position) \(degree) \(chineseLabel)"
+    }
+    
+    /** save image to album **/
+    func saveImage(image: UIImage) {
+        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
     }
 }
 
