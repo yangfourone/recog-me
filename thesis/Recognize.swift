@@ -31,136 +31,13 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
     var LM = CLLocationManager()
     
     var directionTag:UIImageView?
+    var resetCounter = 4
+    var updateBool:Bool = true
     
-    // MARK: Tag Information Definition
-    let tagInformation:[Dictionary<String,Any>] = [
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "A",
-            "x-axis" : 805,
-            "y-axis" : 696
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "B",
-            "x-axis" : 730,
-            "y-axis" : 696
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "C",
-            "x-axis" : 679,
-            "y-axis" : 696
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "D",
-            "x-axis" : 626,
-            "y-axis" : 749
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "E",
-            "x-axis" : 626,
-            "y-axis" : 696
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "F",
-            "x-axis" : 626,
-            "y-axis" : 677
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "G",
-            "x-axis" : 559,
-            "y-axis" : 677
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "H",
-            "x-axis" : 507,
-            "y-axis" : 677
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "I",
-            "x-axis" : 425,
-            "y-axis" : 677
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "J",
-            "x-axis" : 340,
-            "y-axis" : 677
-        ],
-        [
-            "building" : "EE",
-            "floor" : "7F",
-            "position" : "K",
-            "x-axis" : 340,
-            "y-axis" : 749
-        ],
-        [
-            "building" : "EE",
-            "floor" : "8F",
-            "position" : "A",
-            "x-axis" : 681,
-            "y-axis" : 696
-        ],
-        [
-            "building" : "EE",
-            "floor" : "8F",
-            "position" : "B",
-            "x-axis" : 625,
-            "y-axis" : 750
-        ],
-        [
-            "building" : "EE",
-            "floor" : "8F",
-            "position" : "C",
-            "x-axis" : 625,
-            "y-axis" : 689
-        ],
-        [
-            "building" : "EE",
-            "floor" : "8F",
-            "position" : "D",
-            "x-axis" : 560,
-            "y-axis" : 689
-        ],
-        [
-            "building" : "EE",
-            "floor" : "8F",
-            "position" : "E",
-            "x-axis" : 468,
-            "y-axis" : 689
-        ],
-        [
-            "building" : "EE",
-            "floor" : "8F",
-            "position" : "F",
-            "x-axis" : 409,
-            "y-axis" : 689
-        ],
-        [
-            "building" : "EE",
-            "floor" : "8F",
-            "position" : "G",
-            "x-axis" : 328,
-            "y-axis" : 689
-        ]
-    ]
+    // update bool
+    var lastBuilding:String?
+    var lastFloor:String?
+    var lastPosition:String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -200,6 +77,7 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
         indoorMapMask.backgroundColor = UIColor(white: 0, alpha: 0)
         end.isHidden = false
         start.isHidden = true
+        directionTag?.isHidden = false
         information.text = NSLocalizedString("Recognize_Information_Setting", comment: "")
         /** loading camera view **/
         cameraView.isHidden = false
@@ -220,6 +98,7 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
         indoorMapMask.isHidden = false
         end.isHidden = true
         start.isHidden = false
+        directionTag?.isHidden = true
         information.text = ""
         /** shot down camera view **/
         cameraView.isHidden = true
@@ -243,7 +122,8 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
                 do {
                     if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [Dictionary<String,Any>]
                     {
-                        self.floorRecognize(jsonArray: jsonArray, pressure: self.hPa)
+                        self.resetCounter += 1
+                        self.recognizeChecking(jsonArray: jsonArray)
                     } else {
                         print("bad json")
                     }
@@ -288,11 +168,27 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
 //        })
     }
     
-    // MARK: Floor Recognize ??
-    func floorRecognize(jsonArray: [Dictionary<String,Any>], pressure: Float) {
+    // MARK: Checking
+    func recognizeChecking(jsonArray: [Dictionary<String,Any>]) {
         let index = 0
-        indoorMap.image = UIImage(named: "\(jsonArray[index]["floor"]! as! String).png")
-        setResponseParameter(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String, degree: jsonArray[index]["degree"]! as! String, chineseLabel: jsonArray[index]["chinese"]! as! String)
+        
+        getTagNeighbor(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String)
+        print(updateBool)
+        // if neighbor, that will update information
+        if updateBool {
+            // update last position information
+            lastBuilding = jsonArray[index]["building"]! as? String
+            lastFloor = jsonArray[index]["floor"]! as? String
+            lastPosition = jsonArray[index]["position"]! as? String
+            // update indoor map layout
+            updateIndoorMap(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String, degree: jsonArray[index]["degree"]! as! String, chineseLabel: jsonArray[index]["chinese"]! as! String)
+        }
+    }
+    
+    // MARK: Update Indoor Map
+    func updateIndoorMap(building: String, floor: String, position: String, degree: String, chineseLabel: String) {
+        indoorMap.image = UIImage(named: "\(floor).png")
+        setResponseParameter(building: building, floor: floor, position: position, degree: degree, chineseLabel: chineseLabel)
     }
     
     // MARK: Show Parameters to Label
@@ -303,30 +199,39 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
     
     // MARK: Get Tag x-axis and y-axis
     func getTagPosition (building: String, floor: String, position: String, degree: String) {
-        for index in 0..<tagInformation.count {
-            if building == tagInformation[index]["building"] as! String && floor == tagInformation[index]["floor"] as! String && position == tagInformation[index]["position"] as! String {
-                showTag(x: tagInformation[index]["x-axis"] as! Int, y: tagInformation[index]["y-axis"] as! Int, degree: degree)
+        let tagCoordinate = getTagCoordinate()
+        for index in 0..<tagCoordinate.count {
+            if building == tagCoordinate[index]["building"] as! String && floor == tagCoordinate[index]["floor"] as! String && position == tagCoordinate[index]["position"] as! String {
+                showTag(x: tagCoordinate[index]["x-axis"] as! Int, y: tagCoordinate[index]["y-axis"] as! Int, degree: degree)
             }
         }
     }
     
     // MARK: Show The Tag
     func showTag(x:Int, y:Int, degree:String) {
-        if directionTag != nil {
-            directionTag?.removeFromSuperview()
-        }
+        
         let imageName = "\(degree).png"
         let image = UIImage(named: imageName)
-        directionTag = UIImageView(image: image!)
-        directionTag!.frame = CGRect(x: x, y: y, width: 15, height: 15)
-        view.addSubview(directionTag!)
+        
+        if directionTag != nil {
+            // Fix Position
+            directionTag!.removeFromSuperview()
+            directionTag = UIImageView(image: image!)
+            directionTag!.frame = CGRect(x: x, y: y, width: 15, height: 15)
+            view.addSubview(directionTag!)
+        } else {
+            // Add
+            directionTag = UIImageView(image: image!)
+            directionTag!.frame = CGRect(x: x, y: y, width: 15, height: 15)
+            view.addSubview(directionTag!)
+        }
     }
     
     // MARK: GPS Location Information (altitude)
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
+//        if let location = locations.first {
 //            print("高度: \(location.altitude)\n")
-        }
+//        }
     }
     
     // MARK: Upload Image
@@ -409,5 +314,301 @@ extension UIImage {
 extension Recognize: CaptureManagerDelegate {
     func processCapturedImage(image: UIImage) {
         self.cameraView.image = image
+    }
+}
+
+extension Recognize {
+
+    // MARK: Tag Information Definition
+    
+    func getTagCoordinate() -> [Dictionary<String,Any>] {
+        let tag:[Dictionary<String,Any>] = [
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "A",
+                "x-axis" : 805,
+                "y-axis" : 696
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "B",
+                "x-axis" : 730,
+                "y-axis" : 696
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "C",
+                "x-axis" : 679,
+                "y-axis" : 696
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "D",
+                "x-axis" : 626,
+                "y-axis" : 749
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "E",
+                "x-axis" : 626,
+                "y-axis" : 696
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "F",
+                "x-axis" : 626,
+                "y-axis" : 677
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "G",
+                "x-axis" : 559,
+                "y-axis" : 677
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "H",
+                "x-axis" : 507,
+                "y-axis" : 677
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "I",
+                "x-axis" : 425,
+                "y-axis" : 677
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "J",
+                "x-axis" : 340,
+                "y-axis" : 677
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "K",
+                "x-axis" : 340,
+                "y-axis" : 749
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "A",
+                "x-axis" : 681,
+                "y-axis" : 696
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "B",
+                "x-axis" : 625,
+                "y-axis" : 750
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "C",
+                "x-axis" : 625,
+                "y-axis" : 689
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "D",
+                "x-axis" : 560,
+                "y-axis" : 689
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "E",
+                "x-axis" : 468,
+                "y-axis" : 689
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "F",
+                "x-axis" : 409,
+                "y-axis" : 689
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "G",
+                "x-axis" : 328,
+                "y-axis" : 689
+            ]
+        ]
+        
+        return tag
+    }
+
+    
+    // MARK: Tag Neighbor Definition
+    
+    func getTagNeighbor(building: String, floor: String, position: String) {
+        
+        let neighborTable = [
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "A",
+                "neighbor" : "A,B,C"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "B",
+                "neighbor" : "A,B,C,E"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "C",
+                "neighbor" : "A,B,C,D,E,F"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "D",
+                "neighbor" : "C,D,E,F"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "E",
+                "neighbor" : "B,C,D,E,F,G"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "F",
+                "neighbor" : "C,D,E,F,G,H"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "G",
+                "neighbor" : "E,F,G,H,I"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "H",
+                "neighbor" : "F,G,H,I,J"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "I",
+                "neighbor" : "G,H,I,J,K"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "J",
+                "neighbor" : "H,I,J,K"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "7F",
+                "position" : "K",
+                "neighbor" : "I,J,K"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "A",
+                "neighbor" : "A,B,C"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "B",
+                "neighbor" : "A,B,C,D"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "C",
+                "neighbor" : "A,B,C,D"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "D",
+                "neighbor" : "A,B,C,D,E"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "E",
+                "neighbor" : "C,D,E,F,G"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "F",
+                "neighbor" : "D,E,F,G"
+            ],
+            [
+                "building" : "EE",
+                "floor" : "8F",
+                "position" : "G",
+                "neighbor" : "E,F,G"
+            ]
+        ]
+        
+        // except first time in this function
+        if lastBuilding != nil && lastFloor != nil && lastPosition != nil {
+            for index in 0..<neighborTable.count {
+                // get last position's neighbor
+                if lastBuilding == neighborTable[index]["building"]! && lastFloor == neighborTable[index]["floor"]! && lastPosition == neighborTable[index]["position"]! {
+                    // split every neighbor into array
+                    let tagNeighbor = neighborTable[index]["neighbor"]!
+                    let neighborArray = tagNeighbor.split(separator: ",")
+                    
+                    for index in 0..<neighborArray.count {
+                        
+                        // if the neighbor exists, that means it is valid
+                        // else we need to have a counter to record how many times we can not recognize position. we should reset if much more 4 times
+                        if resetCounter < 4 {
+                            if position == neighborArray[index] && floor == lastFloor {
+                                updateBool = true
+                                resetCounter = 0
+                                break
+                            } else {
+                                updateBool = false
+                                if index == neighborArray.count {
+                                    break
+                                }
+                            }
+                        } else {
+                            // reset current position
+                            print("\n------------------ RESET POSITION ------------------\n")
+                            updateBool = true
+                            resetCounter = 0
+                            break
+                        }
+                    }
+                    break
+                }
+            }
+        } else {
+            // first time in this function
+            updateBool = true
+        }
+        
     }
 }
