@@ -17,7 +17,8 @@
 "SignUp_SignUp" = "Sign Up";
 "SignUp_Back" = " Back";
 
-"Recognize_LogOut" = " Log Out";
+"Recognize_Record" = " Record";
+"Recognize_Reset" = " Reset";
 "Recognize_Information" = "";
 "Recognize_Information_Setting" = "Setting Up...";
 "Recognize_Start" = " Start";

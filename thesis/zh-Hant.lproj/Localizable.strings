@@ -17,7 +17,8 @@
 "SignUp_SignUp" = "確定註冊";
 "SignUp_Back" = " 上一頁";
 
-"Recognize_LogOut" = " 登出";
+"Recognize_Record" = " 紀錄";
+"Recognize_Reset" = " 刪除紀錄";
 "Recognize_Information" = "";
 "Recognize_Information_Setting" = "設定中...";
 "Recognize_Start" = " 開始";

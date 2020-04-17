@@ -9,9 +9,8 @@
 import UIKit
 import AVFoundation
 import CoreMotion
-import CoreLocation
 
-class Recognize: UIViewController, CLLocationManagerDelegate {
+class Recognize: UIViewController {
     
     @IBOutlet weak var cameraView: UIImageView!
     @IBOutlet weak var indoorMap: UIImageView!
@@ -22,19 +21,29 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var end: UIButton!
     @IBOutlet weak var activity: UIActivityIndicatorView!
     
+    // For Analysis
+    @IBOutlet weak var record: UIButton!
+    @IBOutlet weak var errorLabel: UILabel!
+    @IBOutlet weak var totalLabel: UILabel!
+    @IBOutlet weak var rateLabel: UILabel!
+    @IBOutlet weak var reset: UIButton!
+    var error:Int = 0
+    var total:Int = 0
+    var rate:Float = 0.0
+    
+    // For upload image to server
     var timerTask:Timer?
+    
+    // For barometer value
     let altimeter = CMAltimeter()
     var hPa:Float = 0.0
     var counterForBarometer = 0
     var valueForBarometer:Float = 0.0
     
-    var LM = CLLocationManager()
-    
+    // For tag update
     var directionTag:UIImageView?
     var resetCounter = 4
     var updateBool:Bool = true
-    
-    // update bool
     var lastBuilding:String?
     var lastFloor:String?
     var lastPosition:String?
@@ -44,11 +53,14 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
         
         /** view styling **/
         end.isHidden = true
+        record.isHidden = true
         
         cameraViewMask.layer.cornerRadius = 8
         cameraViewMask.layer.borderColor = UIColor.white.cgColor
         cameraViewMask.layer.borderWidth = 3
         cameraViewMask.backgroundColor = UIColor(white: 0, alpha: 1)
+        
+        indoorMap.layer.cornerRadius = 8
         
         indoorMapMask.layer.cornerRadius = 8
         indoorMapMask.layer.borderColor = UIColor.white.cgColor
@@ -57,17 +69,6 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
         
         startRelativeAltitudeUpdates()
         activity.stopAnimating()
-        
-        /** location manager **/
-        LM.requestWhenInUseAuthorization()
-        LM.requestAlwaysAuthorization()
-        LM.delegate = self
-        LM.startUpdatingLocation()
-    }
-    
-    // MARK: Log Out Button
-    @IBAction func logOut(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
     }
     
     // MARK: Start Button
@@ -77,6 +78,8 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
         indoorMapMask.backgroundColor = UIColor(white: 0, alpha: 0)
         end.isHidden = false
         start.isHidden = true
+        record.isHidden = false
+        reset.isHidden = true
         directionTag?.isHidden = false
         information.text = NSLocalizedString("Recognize_Information_Setting", comment: "")
         /** loading camera view **/
@@ -98,6 +101,8 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
         indoorMapMask.isHidden = false
         end.isHidden = true
         start.isHidden = false
+        record.isHidden = true
+        reset.isHidden = false
         directionTag?.isHidden = true
         information.text = ""
         /** shot down camera view **/
@@ -108,6 +113,30 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
 
         timerTask?.invalidate()
         timerTask = nil
+    }
+    
+    // MARK: Record Button
+    @IBAction func Record(_ sender: Any) {
+        error += 1
+        updateErrorRate()
+    }
+    
+    // MARK: Reset Button
+    @IBAction func Reset(_ sender: Any) {
+        let alertController = UIAlertController(title: "注意！", message: "確定刪除底下的統計資料？", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "確認刪除", style: .default) { (_) in
+            self.error = 0
+            self.total = 0
+            self.rate = 0.0
+            self.errorLabel.text = "Error: 0"
+            self.totalLabel.text = "Total: 0"
+            self.rateLabel.text = "Rate: 0.00%"
+        }
+        alertController.addAction(okAction)
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+//        show(alertController, sender: self)
+        present(alertController, animated: true, completion: nil)
     }
     
     // MARK: Upload and Get Response
@@ -123,6 +152,7 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
                     if let jsonArray = try JSONSerialization.jsonObject(with: data, options : .allowFragments) as? [Dictionary<String,Any>]
                     {
                         self.resetCounter += 1
+                        self.total += 1
                         self.recognizeChecking(jsonArray: jsonArray)
                     } else {
                         print("bad json")
@@ -176,13 +206,22 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
         print(updateBool)
         // if neighbor, that will update information
         if updateBool {
-            // update last position information
-            lastBuilding = jsonArray[index]["building"]! as? String
-            lastFloor = jsonArray[index]["floor"]! as? String
-            lastPosition = jsonArray[index]["position"]! as? String
             // update indoor map layout
             updateIndoorMap(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String, degree: jsonArray[index]["degree"]! as! String, chineseLabel: jsonArray[index]["chinese"]! as! String)
+        } else {
+            
+            // MARK: DEBUG
+            information.text = "Last: \(lastBuilding ?? "nil") \(lastFloor ?? "nil") \(lastPosition ?? "nil"), Current: \(jsonArray[index]["building"]! as! String) \(jsonArray[index]["floor"]! as! String) \(jsonArray[index]["position"]! as! String), Counter: \(resetCounter)"
         }
+        updateErrorRate()
+    }
+    
+    // MARK: Update Error Rate
+    func updateErrorRate() {
+        errorLabel.text = "Error: \(error)"
+        totalLabel.text = "Total: \(total)"
+        rate = Float(error)/Float(total)*100
+        rateLabel.text = "Rate: \(String(format: "%.2f", rate))%"
     }
     
     // MARK: Update Indoor Map
@@ -194,7 +233,14 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
     // MARK: Show Parameters to Label
     func setResponseParameter(building: String, floor: String, position: String, degree: String, chineseLabel: String) {
         getTagPosition(building: building, floor: floor, position: position, degree: degree)
-        information.text = "\(building) \(floor) \(position) \(degree) \(chineseLabel)"
+        
+        // MARK: DEBUG
+        information.text = "Last: \(lastBuilding ?? "nil") \(lastFloor ?? "nil") \(lastPosition ?? "nil"), Current: \(building) \(floor) \(position), Counter: \(resetCounter)"
+
+        // update last position information
+        lastBuilding = building
+        lastFloor = floor
+        lastPosition = position
     }
     
     // MARK: Get Tag x-axis and y-axis
@@ -225,13 +271,6 @@ class Recognize: UIViewController, CLLocationManagerDelegate {
             directionTag!.frame = CGRect(x: x, y: y, width: 15, height: 15)
             view.addSubview(directionTag!)
         }
-    }
-    
-    // MARK: GPS Location Information (altitude)
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-//        if let location = locations.first {
-//            print("高度: \(location.altitude)\n")
-//        }
     }
     
     // MARK: Upload Image
@@ -327,127 +366,127 @@ extension Recognize {
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "A",
-                "x-axis" : 805,
-                "y-axis" : 696
+                "x-axis" : 911,
+                "y-axis" : 683
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "B",
-                "x-axis" : 730,
-                "y-axis" : 696
+                "x-axis" : 823,
+                "y-axis" : 683
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "C",
-                "x-axis" : 679,
-                "y-axis" : 696
+                "x-axis" : 766,
+                "y-axis" : 683
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "D",
-                "x-axis" : 626,
-                "y-axis" : 749
+                "x-axis" : 705,
+                "y-axis" : 744
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "E",
-                "x-axis" : 626,
-                "y-axis" : 696
+                "x-axis" : 705,
+                "y-axis" : 683
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "F",
-                "x-axis" : 626,
-                "y-axis" : 677
+                "x-axis" : 705,
+                "y-axis" : 663
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "G",
-                "x-axis" : 559,
-                "y-axis" : 677
+                "x-axis" : 632,
+                "y-axis" : 663
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "H",
-                "x-axis" : 507,
-                "y-axis" : 677
+                "x-axis" : 564,
+                "y-axis" : 663
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "I",
-                "x-axis" : 425,
-                "y-axis" : 677
+                "x-axis" : 468,
+                "y-axis" : 663
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "J",
-                "x-axis" : 340,
-                "y-axis" : 677
+                "x-axis" : 386,
+                "y-axis" : 663
             ],
             [
                 "building" : "EE",
                 "floor" : "7F",
                 "position" : "K",
-                "x-axis" : 340,
-                "y-axis" : 749
+                "x-axis" : 386,
+                "y-axis" : 743
             ],
             [
                 "building" : "EE",
                 "floor" : "8F",
                 "position" : "A",
-                "x-axis" : 681,
-                "y-axis" : 696
+                "x-axis" : 781,
+                "y-axis" : 683
             ],
             [
                 "building" : "EE",
                 "floor" : "8F",
                 "position" : "B",
-                "x-axis" : 625,
-                "y-axis" : 750
+                "x-axis" : 705,
+                "y-axis" : 744
             ],
             [
                 "building" : "EE",
                 "floor" : "8F",
                 "position" : "C",
-                "x-axis" : 625,
-                "y-axis" : 689
+                "x-axis" : 705,
+                "y-axis" : 677
             ],
             [
                 "building" : "EE",
                 "floor" : "8F",
                 "position" : "D",
-                "x-axis" : 560,
-                "y-axis" : 689
+                "x-axis" : 633,
+                "y-axis" : 677
             ],
             [
                 "building" : "EE",
                 "floor" : "8F",
                 "position" : "E",
-                "x-axis" : 468,
-                "y-axis" : 689
+                "x-axis" : 535,
+                "y-axis" : 677
             ],
             [
                 "building" : "EE",
                 "floor" : "8F",
                 "position" : "F",
-                "x-axis" : 409,
-                "y-axis" : 689
+                "x-axis" : 469,
+                "y-axis" : 677
             ],
             [
                 "building" : "EE",
                 "floor" : "8F",
                 "position" : "G",
-                "x-axis" : 328,
-                "y-axis" : 689
+                "x-axis" : 373,
+                "y-axis" : 677
             ]
         ]
         
@@ -609,6 +648,5 @@ extension Recognize {
             // first time in this function
             updateBool = true
         }
-        
     }
 }
