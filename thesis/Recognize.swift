@@ -203,7 +203,7 @@ class Recognize: UIViewController {
         let index = 0
         
         getTagNeighbor(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String)
-        print(updateBool)
+        
         // if neighbor, that will update information
         if updateBool {
             // update indoor map layout
