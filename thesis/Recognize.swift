@@ -34,11 +34,8 @@ class Recognize: UIViewController {
     // For upload image to server
     var timerTask:Timer?
     
-    // For barometer value
+    // For relative altitude
     let altimeter = CMAltimeter()
-    var hPa:Float = 0.0
-    var counterForBarometer = 0
-    var valueForBarometer:Float = 0.0
     
     // For tag update
     var directionTag:UIImageView?
@@ -61,14 +58,44 @@ class Recognize: UIViewController {
         cameraViewMask.backgroundColor = UIColor(white: 0, alpha: 1)
         
         indoorMap.layer.cornerRadius = 8
+        cameraView.layer.cornerRadius = 8
         
         indoorMapMask.layer.cornerRadius = 8
         indoorMapMask.layer.borderColor = UIColor.white.cgColor
         indoorMapMask.layer.borderWidth = 3
         indoorMapMask.backgroundColor = UIColor(white: 0, alpha: 1)
         
-        startRelativeAltitudeUpdates()
+        // startRelativeAltitudeUpdates()
         activity.stopAnimating()
+    }
+    
+    // MARK: GET DATA
+    var second = 0
+    
+    func recognizeFromVideo(videoName: String, fileExtension: String, interval: Int) {
+        let audioFilePath = Bundle.main.path(forResource: videoName, ofType: fileExtension)
+        let image = self.imageFromVideo(url: URL(fileURLWithPath: audioFilePath!), at: TimeInterval(second))
+        self.cameraView.image = image
+        second += interval
+    }
+
+    func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
+        let asset = AVURLAsset(url: url)
+
+        let assetIG = AVAssetImageGenerator(asset: asset)
+        assetIG.appliesPreferredTrackTransform = true
+        assetIG.apertureMode = AVAssetImageGenerator.ApertureMode.encodedPixels
+
+        let cmTime = CMTime(seconds: time, preferredTimescale: 60)
+        let thumbnailImageRef: CGImage
+        do {
+            thumbnailImageRef = try assetIG.copyCGImage(at: cmTime, actualTime: nil)
+        } catch let error {
+            print("Error: \(error)")
+            return nil
+        }
+
+        return UIImage(cgImage: thumbnailImageRef)
     }
     
     // MARK: Start Button
@@ -125,6 +152,11 @@ class Recognize: UIViewController {
     @IBAction func Reset(_ sender: Any) {
         let alertController = UIAlertController(title: "注意！", message: "確定刪除底下的統計資料？", preferredStyle: .alert)
         let okAction = UIAlertAction(title: "確認刪除", style: .default) { (_) in
+            self.updateBool = true
+            self.resetCounter = 4
+            self.lastBuilding = nil
+            self.lastFloor = nil
+            self.lastPosition = nil
             self.error = 0
             self.total = 0
             self.rate = 0.0
@@ -135,12 +167,15 @@ class Recognize: UIViewController {
         alertController.addAction(okAction)
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         alertController.addAction(cancelAction)
-//        show(alertController, sender: self)
         present(alertController, animated: true, completion: nil)
     }
     
     // MARK: Upload and Get Response
     @objc func Recognize() {
+        
+        // MARK: using for collecting comparison data
+        // recognizeFromVideo(videoName: "8F", fileExtension: "MOV", interval: 2)
+        
         uploadImage { results in
             switch results {
             case .success(let res):
@@ -171,31 +206,23 @@ class Recognize: UIViewController {
         }
     }
     
-    // MARK: 氣壓偵測與相對高度偵測
+    // MARK: 相對高度偵測
     func startRelativeAltitudeUpdates() {
-//        guard CMAltimeter.isRelativeAltitudeAvailable() else {
-//            print("\n當前設備不支援獲取高度\n")
-//            return
-//        }
-//
-//        let queue = OperationQueue.current
-//        self.altimeter.startRelativeAltitudeUpdates(to: queue!, withHandler: {
-//            (altitudeData, error) in
-//            guard error == nil else {
-//                print(error!)
-//                return
-//            }
-//            // 百帕
-//            self.hPa = Float(truncating: altitudeData!.pressure)*10.0
-//
-//            self.counterForBarometer += 1
-//            self.valueForBarometer += self.hPa
-//            let averageBarometerValue = self.valueForBarometer / Float(self.counterForBarometer)
-//            self.information.text = "Times: \(self.counterForBarometer), Average: \(averageBarometerValue)"
-//
-//            // 相對高度
-//            print("\(altitudeData!.relativeAltitude) m\n")
-//        })
+        guard CMAltimeter.isRelativeAltitudeAvailable() else {
+            print("\n當前設備不支援獲取高度\n")
+            return
+        }
+
+        let queue = OperationQueue.current
+        self.altimeter.startRelativeAltitudeUpdates(to: queue!, withHandler: {
+            (altitudeData, error) in
+            guard error == nil else {
+                print(error!)
+                return
+            }
+            // 相對高度
+            print("\(altitudeData!.relativeAltitude) m\n")
+        })
     }
     
     // MARK: Checking
@@ -210,7 +237,7 @@ class Recognize: UIViewController {
             updateIndoorMap(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String, degree: jsonArray[index]["degree"]! as! String, chineseLabel: jsonArray[index]["chinese"]! as! String)
         } else {
             
-            // MARK: DEBUG
+            // MARK: Information TextField
             information.text = "Last: \(lastBuilding ?? "nil") \(lastFloor ?? "nil") \(lastPosition ?? "nil"), Current: \(jsonArray[index]["building"]! as! String) \(jsonArray[index]["floor"]! as! String) \(jsonArray[index]["position"]! as! String), Counter: \(resetCounter)"
         }
         updateErrorRate()
@@ -234,7 +261,7 @@ class Recognize: UIViewController {
     func setResponseParameter(building: String, floor: String, position: String, degree: String, chineseLabel: String) {
         getTagPosition(building: building, floor: floor, position: position, degree: degree)
         
-        // MARK: DEBUG
+        // MARK: Information TextField
         information.text = "Last: \(lastBuilding ?? "nil") \(lastFloor ?? "nil") \(lastPosition ?? "nil"), Current: \(building) \(floor) \(position), Counter: \(resetCounter)"
 
         // update last position information
