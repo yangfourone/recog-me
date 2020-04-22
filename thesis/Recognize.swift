@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import AVKit
 import CoreMotion
 
 class Recognize: UIViewController {
@@ -45,6 +46,9 @@ class Recognize: UIViewController {
     var lastFloor:String?
     var lastPosition:String?
     
+    // For quantify error rate
+    let testVideoName = "7F"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -69,7 +73,19 @@ class Recognize: UIViewController {
         activity.stopAnimating()
     }
     
-    // MARK: GET DATA
+    // MARK: Play From Video
+    @objc func playFromVideo() {
+        guard let path = Bundle.main.path(forResource: testVideoName, ofType: "MOV") else {
+            return
+        }
+        let player = AVPlayer(url: URL(fileURLWithPath: path))
+        let playerLayer = AVPlayerLayer(player: player)
+        playerLayer.frame = self.cameraViewMask.bounds
+        self.cameraViewMask.layer.addSublayer(playerLayer)
+        player.play()
+    }
+    
+    // MARK: Quantify Error Rate
     var second = 0
     
     func recognizeFromVideo(videoName: String, fileExtension: String, interval: Int) {
@@ -113,8 +129,11 @@ class Recognize: UIViewController {
         cameraView.isHidden = false
         indoorMap.isHidden = false
 
-        CaptureManager.shared.startSession()
-        CaptureManager.shared.delegate = self
+//        CaptureManager.shared.startSession()
+//        CaptureManager.shared.delegate = self
+        
+        // MARK: using for collecting comparison data
+        Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.playFromVideo), userInfo: nil, repeats: false)
         
         timerTask = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.Recognize), userInfo: nil, repeats: true)
     }
@@ -136,7 +155,7 @@ class Recognize: UIViewController {
         cameraView.isHidden = true
         indoorMap.isHidden = true
         
-        CaptureManager.shared.stopSession()
+//        CaptureManager.shared.stopSession()
 
         timerTask?.invalidate()
         timerTask = nil
@@ -174,7 +193,7 @@ class Recognize: UIViewController {
     @objc func Recognize() {
         
         // MARK: using for collecting comparison data
-        // recognizeFromVideo(videoName: "8F", fileExtension: "MOV", interval: 2)
+        recognizeFromVideo(videoName: testVideoName, fileExtension: "MOV", interval: 2)
         
         uploadImage { results in
             switch results {
