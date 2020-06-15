@@ -46,7 +46,7 @@ class Recognize: UIViewController {
     var lastFloor:String?
     var lastPosition:String?
     
-    // For quantify error rate
+    // For accuracy quantification
     let testVideoName = "7F"
     
     override func viewDidLoad() {
@@ -69,7 +69,6 @@ class Recognize: UIViewController {
         indoorMapMask.layer.borderWidth = 3
         indoorMapMask.backgroundColor = UIColor(white: 0, alpha: 1)
         
-        // startRelativeAltitudeUpdates()
         activity.stopAnimating()
     }
     
@@ -129,12 +128,12 @@ class Recognize: UIViewController {
         cameraView.isHidden = false
         indoorMap.isHidden = false
 
-//        CaptureManager.shared.startSession()
-//        CaptureManager.shared.delegate = self
+        CaptureManager.shared.startSession()
+        CaptureManager.shared.delegate = self
         
-        // MARK: using for collecting comparison data
-        Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.playFromVideo), userInfo: nil, repeats: false)
-        
+        // MARK: For accuracy quantification
+//        Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.playFromVideo), userInfo: nil, repeats: false)
+
         timerTask = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.Recognize), userInfo: nil, repeats: true)
     }
     
@@ -155,7 +154,7 @@ class Recognize: UIViewController {
         cameraView.isHidden = true
         indoorMap.isHidden = true
         
-//        CaptureManager.shared.stopSession()
+        CaptureManager.shared.stopSession()
 
         timerTask?.invalidate()
         timerTask = nil
@@ -192,8 +191,8 @@ class Recognize: UIViewController {
     // MARK: Upload and Get Response
     @objc func Recognize() {
         
-        // MARK: using for collecting comparison data
-        recognizeFromVideo(videoName: testVideoName, fileExtension: "MOV", interval: 2)
+        // MARK: For accuracy quantification
+//        recognizeFromVideo(videoName: testVideoName, fileExtension: "MOV", interval: 2)
         
         uploadImage { results in
             switch results {
@@ -225,7 +224,7 @@ class Recognize: UIViewController {
         }
     }
     
-    // MARK: 相對高度偵測
+    // MARK: 相對高度偵測 (沒有用到)
     func startRelativeAltitudeUpdates() {
         guard CMAltimeter.isRelativeAltitudeAvailable() else {
             print("\n當前設備不支援獲取高度\n")
@@ -249,11 +248,10 @@ class Recognize: UIViewController {
         let index = 0
         
         getTagNeighbor(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String)
-        
-        // if neighbor, that will update information
+
+        // if neighbor -> update information
         if updateBool {
-            // update indoor map layout
-            updateIndoorMap(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String, degree: jsonArray[index]["degree"]! as! String, chineseLabel: jsonArray[index]["chinese"]! as! String)
+            updateIndoorMap(building: jsonArray[index]["building"]! as! String, floor: jsonArray[index]["floor"]! as! String, position: jsonArray[index]["position"]! as! String, degree: jsonArray[index]["degree"]! as! String)
         } else {
             
             // MARK: Information TextField
@@ -271,13 +269,13 @@ class Recognize: UIViewController {
     }
     
     // MARK: Update Indoor Map
-    func updateIndoorMap(building: String, floor: String, position: String, degree: String, chineseLabel: String) {
+    func updateIndoorMap(building: String, floor: String, position: String, degree: String) {
         indoorMap.image = UIImage(named: "\(floor).png")
-        setResponseParameter(building: building, floor: floor, position: position, degree: degree, chineseLabel: chineseLabel)
+        setResponseParameter(building: building, floor: floor, position: position, degree: degree)
     }
     
     // MARK: Show Parameters to Label
-    func setResponseParameter(building: String, floor: String, position: String, degree: String, chineseLabel: String) {
+    func setResponseParameter(building: String, floor: String, position: String, degree: String) {
         getTagPosition(building: building, floor: floor, position: position, degree: degree)
         
         // MARK: Information TextField
@@ -356,8 +354,7 @@ class Recognize: UIViewController {
     
     // MARK: Resize Image
     func resizeImage(image: UIImage, width: CGFloat) -> UIImage {
-            let size = CGSize(width: width, height:
-                image.size.height * width / image.size.width)
+            let size = CGSize(width: width, height: image.size.height * width / image.size.width)
             let renderer = UIGraphicsImageRenderer(size: size)
             let newImage = renderer.image { (context) in
                 image.draw(in: renderer.format.bounds)
