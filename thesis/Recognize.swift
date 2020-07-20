@@ -32,6 +32,10 @@ class Recognize: UIViewController {
     var total:Int = 0
     var rate:Float = 0.0
     
+    // For calculate process time
+    var totalProcessTime:Float = 0.0
+    var averageProcessTime:Float = 0.0
+    
     // For upload image to server
     var timerTask:Timer?
     
@@ -131,9 +135,10 @@ class Recognize: UIViewController {
         CaptureManager.shared.startSession()
         CaptureManager.shared.delegate = self
         
-        // MARK: For accuracy quantification
+        // MARK: For recognize from video
 //        Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.playFromVideo), userInfo: nil, repeats: false)
 
+        // MARK: For recognize in real time
         timerTask = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(self.Recognize), userInfo: nil, repeats: true)
     }
     
@@ -181,6 +186,8 @@ class Recognize: UIViewController {
             self.errorLabel.text = "Error: 0"
             self.totalLabel.text = "Total: 0"
             self.rateLabel.text = "Rate: 0.00%"
+            self.averageProcessTime = 0.0
+            self.totalProcessTime = 0.0
         }
         alertController.addAction(okAction)
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
@@ -191,8 +198,10 @@ class Recognize: UIViewController {
     // MARK: Upload and Get Response
     @objc func Recognize() {
         
-        // MARK: For accuracy quantification
+        // MARK: For recognize from video
 //        recognizeFromVideo(videoName: testVideoName, fileExtension: "MOV", interval: 2)
+        
+        let processStart = Date()
         
         uploadImage { results in
             switch results {
@@ -216,6 +225,13 @@ class Recognize: UIViewController {
                 
                 /** UI **/
                 self.activity.stopAnimating()
+                
+                /** Calculate Processing Time **/
+                let processFinish = Date()
+                self.totalProcessTime = self.totalProcessTime + Float(processFinish.timeIntervalSince(processStart))
+                self.averageProcessTime = self.totalProcessTime / Float(self.total)
+                print(self.averageProcessTime)
+                
                 break
             case .failure(let error):
                 print(error.localizedDescription)
